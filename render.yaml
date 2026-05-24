@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: actual-http-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PORT
+        value: "5007"
+      - key: ACTUAL_DATA_DIR
+        value: /data
+      - key: ACTUAL_SERVER_URL
+        value: https://subtle-magpie.pikapod.net
+      - key: NODE_ENV
+        value: production
+      - key: API_KEY
+        sync: false  # set manually in dashboard
+      - key: ACTUAL_SERVER_PASSWORD
+        sync: false  # set manually in dashboard

@@ -1,0 +1,60 @@
+# fly.toml app configuration file generated for jsalvatella-actual-api on 2026-05-24T11:34:50+02:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'jsalvatella-actual-api'
+primary_region = 'cdg'
+kill_signal = 'SIGINT'
+kill_timeout = '5s'
+
+[experimental]
+  auto_rollback = true
+
+[build]
+  image = 'jhonderson/actual-http-api:latest'
+
+[env]
+  ACTUAL_DATA_DIR = '/data'
+  ACTUAL_SERVER_URL = 'https://subtle-magpie.pikapod.net'
+  NODE_ENV = 'production'
+  PORT = '5007'
+
+[[mounts]]
+  source = 'actual_data'
+  destination = '/data'
+
+[[services]]
+  protocol = 'tcp'
+  internal_port = 5007
+  processes = ['app']
+
+  [[services.ports]]
+    port = 80
+    handlers = ['http']
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ['tls', 'http']
+
+  [services.concurrency]
+    type = 'connections'
+    hard_limit = 25
+    soft_limit = 20
+
+  [[services.tcp_checks]]
+    interval = '15s'
+    timeout = '2s'
+    grace_period = '1s'
+
+[[restart]]
+  policy = 'on-failure'
+  retries = 10
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 1024
